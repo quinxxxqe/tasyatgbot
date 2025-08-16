@@ -1,6 +1,6 @@
 import os
 import asyncio
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -18,7 +18,6 @@ if not TOKEN:
 bot = Bot(
     token=TOKEN,
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
-)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
@@ -30,17 +29,16 @@ class QuestStates(StatesGroup):
 async def send_wrong_answer(message: types.Message):
     await message.answer("Аяяй, любимая моя девочка, похоже, ты не угадала, попробуй ещё раз, я уверен, что у тебя получится!💗")
 
-# Изменения здесь - квадратные скобки вместо фигурных
-@dp.message(commands=["start"])  # <- Обратите внимание на скобки
+# Новый синтаксис обработчиков
+@dp.message(F.text == "/start")  # Используем F-фильтры
 async def start(message: types.Message):
     await message.answer("Привет! Готов начать квест? Напиши /начать")
 
-@dp.message(commands=["начать"])  # <- И здесь тоже
+@dp.message(F.text == "/начать")
 async def question1(message: types.Message, state: FSMContext):
     await message.answer("Первая загадка: Где мы впервые поговорили?")
     await state.set_state(QuestStates.waiting_for_answer1)
 
-# Остальные обработчики остаются без изменений
 @dp.message(QuestStates.waiting_for_answer1)
 async def answer1(message: types.Message, state: FSMContext):
     if message.text.lower() == "чат корши":
@@ -67,7 +65,7 @@ async def final_question(message: types.Message, state: FSMContext):
     else:
         await send_wrong_answer(message)
 
-@dp.message(lambda message: message.text == "12.09.23")
+@dp.message(F.text == "12.09.23")
 async def final_answer(message: types.Message):
     await message.answer("Ты справилась! 🎉 Поздравляю, ты раскрыла тайное послание! ❤️")
     await message.answer("Теперь, получи послание в видео формате!")
