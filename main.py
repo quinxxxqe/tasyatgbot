@@ -91,7 +91,7 @@ async def handle_answer(message: types.Message, state: FSMContext, current_q: st
                 photos = ["photo1.jpg", "photo2.jpg", "photo3.jpg"]
                 chosen_photo = random.choice(photos)
                 photo = FSInputFile(chosen_photo)
-                await message.answer_photo(photo, caption="Это моё послание тебе, любовь моя 💖")
+                await message.answer_photo(photo, caption="Это мы ? люблю тебя 💖")
             except FileNotFoundError:
                 await message.answer("Фото не найдено, но знай — в моём сердце всегда твои образы 💞")
     else:
@@ -153,3 +153,4 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
+
