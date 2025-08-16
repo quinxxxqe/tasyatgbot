@@ -1,5 +1,6 @@
 import os
 import asyncio
+import random
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
@@ -68,6 +69,9 @@ questions = {
 
 order = ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"]
 
+# 📸 список фото
+photos = ["photo1.jpg", "photo2.jpg", "photo3.jpg"]
+
 @dp.message(F.text == "/start")
 async def start(message: types.Message):
     await message.answer("Привет, моя любимая Тасенька 💖 Готова пройти романтический квест о нашей истории? Напиши /начать")
@@ -88,10 +92,11 @@ async def handle_answer(message: types.Message, state: FSMContext, current_q: st
             await message.answer("Ты справилась, моя душа! 🥰 Наш квест завершён, а наша история только начинается ✨")
             await message.answer("Хочу подарить тебе кое-что особенное... 🎁")
             try:
-                video = InputFile("photo.jpg")
+                chosen_photo = random.choice(photos)
+                photo = InputFile(chosen_photo)
                 await message.answer_photo(photo, caption="Это моё послание тебе, любовь моя 💖")
             except FileNotFoundError:
-                await message.answer("фото не найдено, но знай — в моём сердце всегда играют твои образы 💞")
+                await message.answer("Фото не найдено, но знай — в моём сердце всегда играют твои образы 💞")
     else:
         await send_wrong_answer(message)
 
@@ -153,4 +158,3 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
-
