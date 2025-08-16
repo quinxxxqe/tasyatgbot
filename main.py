@@ -1,7 +1,7 @@
 import os
 import asyncio
 import random
-from aiogram import Bot, Dispatcher, types, F
+from aiogram.types import FSInputFile
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -89,16 +89,15 @@ async def handle_answer(message: types.Message, state: FSMContext, current_q: st
             await message.answer(f"Правильно, любимая 🌹 {questions[next_q]}")
             await state.set_state(next_state)
         else:
-            await message.answer("Ты справилась, моя душа! 🥰 Наш квест завершён, а наша история только начинается ✨")
-            await message.answer("Хочу подарить тебе кое-что особенное... 🎁")
-            try:
-                chosen_photo = random.choice(photos)
-                photo = InputFile(chosen_photo)
-                await message.answer_photo(photo, caption="Это моё послание тебе, любовь моя 💖")
-            except FileNotFoundError:
-                await message.answer("Фото не найдено, но знай — в моём сердце всегда играют твои образы 💞")
-    else:
-        await send_wrong_answer(message)
+    await message.answer("Ты справилась, моя душа! 🥰 Наш квест завершён, а наша история только начинается ✨")
+    await message.answer("Хочу подарить тебе кое-что особенное... 🎁")
+    try:
+        photos = ["photo1.jpg", "photo2.jpg", "photo3.jpg"]  # названия твоих фото
+        chosen_photo = random.choice(photos)
+        photo = FSInputFile(chosen_photo)
+        await message.answer_photo(photo, caption="Это моё послание тебе, любовь моя 💖")
+    except FileNotFoundError:
+        await message.answer("Фото не найдено, но знай — в моём сердце всегда твои образы 💞")
 
 # Динамическое создание хендлеров
 @dp.message(QuestStates.q1)
@@ -158,3 +157,4 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
+
