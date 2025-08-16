@@ -1,11 +1,11 @@
 import os
 import asyncio
 import random
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.types import FSInputFile
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import InputFile
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 from dotenv import load_dotenv
@@ -69,9 +69,6 @@ questions = {
 
 order = ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"]
 
-# 📸 список фото
-photos = ["photo1.jpg", "photo2.jpg", "photo3.jpg"]
-
 @dp.message(F.text == "/start")
 async def start(message: types.Message):
     await message.answer("Привет, моя любимая Тасенька 💖 Готова пройти романтический квест о нашей истории? Напиши /начать")
@@ -81,25 +78,25 @@ async def start_quest(message: types.Message, state: FSMContext):
     await message.answer(questions["q1"])
     await state.set_state(QuestStates.q1)
 
-# Обработчики вопросов
 async def handle_answer(message: types.Message, state: FSMContext, current_q: str, next_q: str, next_state: State):
     text = message.text.lower()
     if any(ans in text for ans in answers[current_q]):
         if next_q:
             await message.answer(f"Правильно, любимая 🌹 {questions[next_q]}")
             await state.set_state(next_state)
+        else:
+            await message.answer("Ты справилась, моя душа! 🥰 Наш квест завершён, а наша история только начинается ✨")
+            await message.answer("Хочу подарить тебе кое-что особенное... 🎁")
+            try:
+                photos = ["photo1.jpg", "photo2.jpg", "photo3.jpg"]
+                chosen_photo = random.choice(photos)
+                photo = FSInputFile(chosen_photo)
+                await message.answer_photo(photo, caption="Это моё послание тебе, любовь моя 💖")
+            except FileNotFoundError:
+                await message.answer("Фото не найдено, но знай — в моём сердце всегда твои образы 💞")
     else:
-    await message.answer("Ты справилась, моя душа! 🥰 Наш квест завершён, а наша история только начинается ✨")
-    await message.answer("Хочу подарить тебе кое-что особенное... 🎁")
-    try:
-        photos = ["photo1.jpg", "photo2.jpg", "photo3.jpg"]  # названия твоих фото
-        chosen_photo = random.choice(photos)
-        photo = FSInputFile(chosen_photo)
-        await message.answer_photo(photo, caption="Это моё послание тебе, любовь моя 💖")
-        except FileNotFoundError:
-        await message.answer("Фото не найдено, но знай — в моём сердце всегда твои образы 💞")
+        await send_wrong_answer(message)
 
-# Динамическое создание хендлеров
 @dp.message(QuestStates.q1)
 async def q1(message: types.Message, state: FSMContext):
     await handle_answer(message, state, "q1", "q2", QuestStates.q2)
@@ -140,7 +137,6 @@ async def q9(message: types.Message, state: FSMContext):
 async def q10(message: types.Message, state: FSMContext):
     await handle_answer(message, state, "q10", None, None)
 
-# HTTP-сервер для Render
 async def handle(request):
     return web.Response(text="Бот работает! Это HTTP-сервер для Render.")
 
@@ -157,7 +153,3 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
-
-
-
-
