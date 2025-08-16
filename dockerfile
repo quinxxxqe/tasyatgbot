@@ -3,4 +3,5 @@ WORKDIR /app
 COPY . .
 RUN pip install --no-cache-dir aiogram aiohttp python-dotenv
 EXPOSE 8080
-CMD ["python", "bot.py"]
+CMD ["python", "main.py"]
+
