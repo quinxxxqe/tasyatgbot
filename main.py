@@ -88,7 +88,7 @@ async def handle_answer(message: types.Message, state: FSMContext, current_q: st
         if next_q:
             await message.answer(f"Правильно, любимая 🌹 {questions[next_q]}")
             await state.set_state(next_state)
-        else:
+ else:
     await message.answer("Ты справилась, моя душа! 🥰 Наш квест завершён, а наша история только начинается ✨")
     await message.answer("Хочу подарить тебе кое-что особенное... 🎁")
     try:
@@ -98,7 +98,6 @@ async def handle_answer(message: types.Message, state: FSMContext, current_q: st
         await message.answer_photo(photo, caption="Это моё послание тебе, любовь моя 💖")
     except FileNotFoundError:
         await message.answer("Фото не найдено, но знай — в моём сердце всегда твои образы 💞")
-
 # Динамическое создание хендлеров
 @dp.message(QuestStates.q1)
 async def q1(message: types.Message, state: FSMContext):
@@ -157,4 +156,5 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
+
 
