@@ -8,7 +8,7 @@ from aiogram.types import InputFile
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 from dotenv import load_dotenv
-from aiohttp import web  # Добавляем aiohttp для HTTP-сервера
+from aiohttp import web
 
 load_dotenv()
 
@@ -16,70 +16,131 @@ TOKEN = os.getenv("BOT_TOKEN")
 if not TOKEN:
     raise ValueError("❌ BOT_TOKEN не найден!")
 
-# Инициализация бота
 bot = Bot(
     token=TOKEN,
-    default=DefaultBotProperties(parse_mode=ParseMode.HTML)  
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
 class QuestStates(StatesGroup):
-    waiting_for_answer1 = State()
-    waiting_for_answer2 = State()
-    waiting_for_final_answer = State()
+    q1 = State()
+    q2 = State()
+    q3 = State()
+    q4 = State()
+    q5 = State()
+    q6 = State()
+    q7 = State()
+    q8 = State()
+    q9 = State()
+    q10 = State()
 
 async def send_wrong_answer(message: types.Message):
-    await message.answer("Аяяй, любимая моя девочка, похоже, ты не угадала, попробуй ещё раз, я уверен, что у тебя получится!💗")
+    await message.answer("Любимая, это не то 🌸 попробуй ещё раз, я верю в тебя 💕")
+
+# Словари с вариантами ответов
+answers = {
+    "q1": ["чат", "чат корши", "в чате", "в чате у корши"],
+    "q2": ["комета", "холод", "киця кицюня"],
+    "q3": ["всю меня", "личико", "глазки", "улыбочку", "тити", "ручки", "плечики", "губки", "носик", "щечки", "ножки", "фигурку"],
+    "q4": ["ночь", "вечер", "поздно", "утром"],
+    "q5": ["киця", "кицюня", "котёнок", "любимая", "солнышко", "моя девочка", "принцесса", "тасенька"],
+    "q6": ["сердце", "сообщения", "голосовые", "песни", "сны", "мысли", "скучаешь", "фоточки", "все", "всё"],
+    "q7": ["обняться", "поцеловаться", "обнимашки", "встретиться", "держаться за ручку", "туда сюда", "погулять", "спать вместе"],
+    "q8": ["море", "париж", "киев", "казань", "весь мир", "владивосток", "уссурийск"],
+    "q9": ["спокойной ночи", "самых сладеньких снов", "сладких снов", "люблю тебя", "кохаю тебе", "люблю тебя безумно сильно", "люблю тебя очень очень сильно", "ты самый самый лучший", "ты самая самая лучшая", "соскучился по тебе", "соскучилась по тебе"],
+    "q10": ["сердце", "звезда", "луна", "розочка", "кольцо", "бесконечность", "сердечко", "котики", "выдрочки", "бибизянки", "обезьянки", "лебеди", "собачки"]
+}
+
+questions = {
+    "q1": "✨ Первый вопрос: Где мы впервые встретились онлайн?",
+    "q2": "🎶 Какая песня одна из первых, которую я тебе показал (или ту, которую я иногда тебе пою)?",
+    "q3": "📸 Что я больше всего люблю видеть на твоих фоточках?",
+    "q4": "🌙 В какое время суток мы чаще всего общаемся?",
+    "q5": "💌 Какое моё любимое обращение к тебе?",
+    "q6": "❤️ Что напоминает тебе обо мне каждый день?",
+    "q7": "🤗 Что мы мечтаем сделать при встрече?",
+    "q8": "🌍 Какое место мы обязательно посетим вдвоём?",
+    "q9": "😴 Что мы чаще всего говорим друг другу перед сном?",
+    "q10": "💖 Если бы у нас был общий символ, что бы это было?"
+}
+
+order = ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"]
 
 @dp.message(F.text == "/start")
 async def start(message: types.Message):
-    await message.answer("Привет! Готов начать квест? Напиши /начать")
+    await message.answer("Привет, моя любимая Тасенька 💖 Готова пройти романтический квест о нашей истории? Напиши /начать")
 
 @dp.message(F.text == "/начать")
-async def question1(message: types.Message, state: FSMContext):
-    await message.answer("Первая загадка: Где мы впервые поговорили?")
-    await state.set_state(QuestStates.waiting_for_answer1)
+async def start_quest(message: types.Message, state: FSMContext):
+    await message.answer(questions["q1"])
+    await state.set_state(QuestStates.q1)
 
-@dp.message(QuestStates.waiting_for_answer1)
-async def answer1(message: types.Message, state: FSMContext):
-    if message.text.lower() == "чат корши":
-        await message.answer("Правильно! Следующий вопрос: Как называется песня, которую я тебе однажды посвятил?")
-        await message.answer("Запомни эти цифры: 12")
-        await state.set_state(QuestStates.waiting_for_answer2)
+# Обработчики вопросов
+async def handle_answer(message: types.Message, state: FSMContext, current_q: str, next_q: str, next_state: State):
+    text = message.text.lower()
+    if any(ans in text for ans in answers[current_q]):
+        if next_q:
+            await message.answer(f"Правильно, любимая 🌹 {questions[next_q]}")
+            await state.set_state(next_state)
+        else:
+            await message.answer("Ты справилась, моя душа! 🥰 Наш квест завершён, а наша история только начинается ✨")
+            await message.answer("Хочу подарить тебе кое-что особенное... 🎁")
+            try:
+                video = InputFile("video.mp4")
+                await message.answer_video(video, caption="Это моё послание тебе, любовь моя 💖")
+            except FileNotFoundError:
+                await message.answer("Видео не найдено, но знай — в моём сердце всегда играют твои образы 💞")
     else:
         await send_wrong_answer(message)
 
-@dp.message(QuestStates.waiting_for_answer2)
-async def answer2(message: types.Message, state: FSMContext):
-    if message.text.lower() in ["комета", "холод"]:
-        await message.answer("Правильно! Финальный вопрос: Сколько раз мы сказали друг другу 'люблю тебя'?")
-        await message.answer("Запомни эти цифры: 09")
-        await state.set_state(QuestStates.waiting_for_final_answer)
-    else:
-        await send_wrong_answer(message)
+# Динамическое создание хендлеров
+@dp.message(QuestStates.q1)
+async def q1(message: types.Message, state: FSMContext):
+    await handle_answer(message, state, "q1", "q2", QuestStates.q2)
 
-@dp.message(QuestStates.waiting_for_final_answer)
-async def final_question(message: types.Message, state: FSMContext):
-    if message.text == "3323":   
-    await message.answer("Ты справилась! 🎉 Поздравляю, ты раскрыла тайное послание! ❤️")
-    await message.answer("Теперь, получи послание в видео формате!")
+@dp.message(QuestStates.q2)
+async def q2(message: types.Message, state: FSMContext):
+    await handle_answer(message, state, "q2", "q3", QuestStates.q3)
 
-    try:
-        video = InputFile("video.mp4")
-        await message.answer_video(video)
-    except FileNotFoundError:
-        await message.answer("Ошибка: видео не найдено.")
-    except Exception as e:
-        await message.answer(f"Произошла ошибка: {e}")
+@dp.message(QuestStates.q3)
+async def q3(message: types.Message, state: FSMContext):
+    await handle_answer(message, state, "q3", "q4", QuestStates.q4)
+
+@dp.message(QuestStates.q4)
+async def q4(message: types.Message, state: FSMContext):
+    await handle_answer(message, state, "q4", "q5", QuestStates.q5)
+
+@dp.message(QuestStates.q5)
+async def q5(message: types.Message, state: FSMContext):
+    await handle_answer(message, state, "q5", "q6", QuestStates.q6)
+
+@dp.message(QuestStates.q6)
+async def q6(message: types.Message, state: FSMContext):
+    await handle_answer(message, state, "q6", "q7", QuestStates.q7)
+
+@dp.message(QuestStates.q7)
+async def q7(message: types.Message, state: FSMContext):
+    await handle_answer(message, state, "q7", "q8", QuestStates.q8)
+
+@dp.message(QuestStates.q8)
+async def q8(message: types.Message, state: FSMContext):
+    await handle_answer(message, state, "q8", "q9", QuestStates.q9)
+
+@dp.message(QuestStates.q9)
+async def q9(message: types.Message, state: FSMContext):
+    await handle_answer(message, state, "q9", "q10", QuestStates.q10)
+
+@dp.message(QuestStates.q10)
+async def q10(message: types.Message, state: FSMContext):
+    await handle_answer(message, state, "q10", None, None)
 
 # HTTP-сервер для Render
 async def handle(request):
     return web.Response(text="Бот работает! Это HTTP-сервер для Render.")
 
 async def run_all():
-    # Создаем HTTP-сервер
     app = web.Application()
     app.router.add_get('/', handle)
     
@@ -88,10 +149,7 @@ async def run_all():
     site = web.TCPSite(runner, host='0.0.0.0', port=8080)
     await site.start()
     
-    # Запускаем бота
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
     asyncio.run(run_all())
-
-
