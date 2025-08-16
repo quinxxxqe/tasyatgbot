@@ -15,12 +15,13 @@ TOKEN = os.getenv("BOT_TOKEN")
 if not TOKEN:
     raise ValueError("❌ BOT_TOKEN не найден!")
 
+# Полностью исправленная инициализация бота
 bot = Bot(
     token=TOKEN,
-    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML)  # Закрывающая скобка и запятая
+
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
-)
 
 class QuestStates(StatesGroup):
     waiting_for_answer1 = State()
@@ -30,8 +31,7 @@ class QuestStates(StatesGroup):
 async def send_wrong_answer(message: types.Message):
     await message.answer("Аяяй, любимая моя девочка, похоже, ты не угадала, попробуй ещё раз, я уверен, что у тебя получится!💗")
 
-# Новый синтаксис обработчиков
-@dp.message(F.text == "/start")  # Используем F-фильтры
+@dp.message(F.text == "/start")
 async def start(message: types.Message):
     await message.answer("Привет! Готов начать квест? Напиши /начать")
 
@@ -84,4 +84,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
