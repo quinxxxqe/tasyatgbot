@@ -96,8 +96,9 @@ async def handle_answer(message: types.Message, state: FSMContext, current_q: st
         chosen_photo = random.choice(photos)
         photo = FSInputFile(chosen_photo)
         await message.answer_photo(photo, caption="Это моё послание тебе, любовь моя 💖")
-    except FileNotFoundError:
+        except FileNotFoundError:
         await message.answer("Фото не найдено, но знай — в моём сердце всегда твои образы 💞")
+
 # Динамическое создание хендлеров
 @dp.message(QuestStates.q1)
 async def q1(message: types.Message, state: FSMContext):
@@ -156,5 +157,6 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
+
 
 
