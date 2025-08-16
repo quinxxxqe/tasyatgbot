@@ -63,13 +63,7 @@ async def answer2(message: types.Message, state: FSMContext):
 @dp.message(QuestStates.waiting_for_final_answer)
 async def final_question(message: types.Message, state: FSMContext):
     if message.text == "3323":
-        await message.answer("Отлично! Теперь собери все цифры, которые я тебе отправил, и напиши дату, которую они образуют.")
-        await message.answer("Запомни эти цифры: 23")
-    else:
-        await send_wrong_answer(message)
-
-@dp.message(F.text == "12.09.23")
-async def final_answer(message: types.Message):
+   
     await message.answer("Ты справилась! 🎉 Поздравляю, ты раскрыла тайное послание! ❤️")
     await message.answer("Теперь, получи послание в видео формате!")
 
@@ -100,3 +94,4 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
+
