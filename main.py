@@ -8,6 +8,7 @@ from aiogram.types import InputFile
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 from dotenv import load_dotenv
+from aiohttp import web  # Добавляем aiohttp для HTTP-сервера
 
 load_dotenv()
 
@@ -15,7 +16,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 if not TOKEN:
     raise ValueError("❌ BOT_TOKEN не найден!")
 
-# Полностью исправленная инициализация бота
+# Инициализация бота
 bot = Bot(
     token=TOKEN,
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)  
@@ -80,9 +81,22 @@ async def final_answer(message: types.Message):
     except Exception as e:
         await message.answer(f"Произошла ошибка: {e}")
 
-async def main():
+# HTTP-сервер для Render
+async def handle(request):
+    return web.Response(text="Бот работает! Это HTTP-сервер для Render.")
+
+async def run_all():
+    # Создаем HTTP-сервер
+    app = web.Application()
+    app.router.add_get('/', handle)
+    
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, host='0.0.0.0', port=8080)
+    await site.start()
+    
+    # Запускаем бота
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    asyncio.run(main())
-
+    asyncio.run(run_all())
