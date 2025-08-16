@@ -9,15 +9,12 @@ from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 from dotenv import load_dotenv
 
-# Загрузка переменных окружения
 load_dotenv()
 
-# Получение токена бота
 TOKEN = os.getenv("BOT_TOKEN")
 if not TOKEN:
-    raise ValueError("❌ BOT_TOKEN не найден! Добавь его в .env или в переменные окружения Render.")
+    raise ValueError("❌ BOT_TOKEN не найден!")
 
-# Инициализация бота
 bot = Bot(
     token=TOKEN,
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
@@ -25,7 +22,6 @@ bot = Bot(
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
-# Состояния для FSM
 class QuestStates(StatesGroup):
     waiting_for_answer1 = State()
     waiting_for_answer2 = State()
@@ -34,15 +30,17 @@ class QuestStates(StatesGroup):
 async def send_wrong_answer(message: types.Message):
     await message.answer("Аяяй, любимая моя девочка, похоже, ты не угадала, попробуй ещё раз, я уверен, что у тебя получится!💗")
 
-@dp.message(commands=['start'])
+# Изменения здесь - квадратные скобки вместо фигурных
+@dp.message(commands=["start"])  # <- Обратите внимание на скобки
 async def start(message: types.Message):
     await message.answer("Привет! Готов начать квест? Напиши /начать")
 
-@dp.message(commands=['начать'])
+@dp.message(commands=["начать"])  # <- И здесь тоже
 async def question1(message: types.Message, state: FSMContext):
     await message.answer("Первая загадка: Где мы впервые поговорили?")
     await state.set_state(QuestStates.waiting_for_answer1)
 
+# Остальные обработчики остаются без изменений
 @dp.message(QuestStates.waiting_for_answer1)
 async def answer1(message: types.Message, state: FSMContext):
     if message.text.lower() == "чат корши":
