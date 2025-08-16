@@ -88,7 +88,7 @@ async def handle_answer(message: types.Message, state: FSMContext, current_q: st
         if next_q:
             await message.answer(f"Правильно, любимая 🌹 {questions[next_q]}")
             await state.set_state(next_state)
- else:
+    else:
     await message.answer("Ты справилась, моя душа! 🥰 Наш квест завершён, а наша история только начинается ✨")
     await message.answer("Хочу подарить тебе кое-что особенное... 🎁")
     try:
@@ -157,6 +157,7 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
+
 
 
 
