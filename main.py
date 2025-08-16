@@ -18,7 +18,8 @@ if not TOKEN:
 # Полностью исправленная инициализация бота
 bot = Bot(
     token=TOKEN,
-    default=DefaultBotProperties(parse_mode=ParseMode.HTML)  # Закрывающая скобка и запятая
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML)  
+)
 
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
@@ -84,3 +85,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
