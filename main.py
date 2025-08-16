@@ -88,10 +88,10 @@ async def handle_answer(message: types.Message, state: FSMContext, current_q: st
             await message.answer("Ты справилась, моя душа! 🥰 Наш квест завершён, а наша история только начинается ✨")
             await message.answer("Хочу подарить тебе кое-что особенное... 🎁")
             try:
-                video = InputFile("video.mp4")
-                await message.answer_video(video, caption="Это моё послание тебе, любовь моя 💖")
+                video = InputFile("photo.jpg")
+                await message.answer_photo(photo, caption="Это моё послание тебе, любовь моя 💖")
             except FileNotFoundError:
-                await message.answer("Видео не найдено, но знай — в моём сердце всегда играют твои образы 💞")
+                await message.answer("фото не найдено, но знай — в моём сердце всегда играют твои образы 💞")
     else:
         await send_wrong_answer(message)
 
@@ -153,3 +153,4 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
+
