@@ -20,6 +20,7 @@ bot = Bot(
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
+)
 
 class QuestStates(StatesGroup):
     waiting_for_answer1 = State()
@@ -83,3 +84,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
